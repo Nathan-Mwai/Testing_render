@@ -12,8 +12,9 @@ print(os.environ.get("DATABASE_URI"))
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-
+app.config['SECRET_KEY'] = os.environ.get("cc3a622b48171c9b9c3e2fd32f52b8e4f975a55b31e49aa0")
+# DATABASE_URI=postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
+# SECRET_KEY=cc3a622b48171c9b9c3e2fd32f52b8e4f975a55b31e49aa0
 # Making it more accessible for presentation time
 # postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
