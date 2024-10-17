@@ -77,7 +77,7 @@ class User(db.Model, SerializerMixin):
     email = db.Column(db.String, unique=True)
     _password_hash = db.Column(db.String)
     address = db.Column(db.String)
-    phone_number = db.Column(db.Integer)
+    phone_number = db.Column(db.String)
     payment_information = db.Column(db.String)
     
     orders = db.relationship("Order", back_populates="user", cascade="all, delete-orphan")

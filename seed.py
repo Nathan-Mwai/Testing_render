@@ -50,7 +50,6 @@ def create_fake_orders(num, user_ids, restaurant_ids):
     order_ids = []
     for _ in range(num):
         order = Order(
-            id=fake.uuid4(),
             status=random.choice(['Pending', 'Completed', 'Cancelled']),
             total_price=random.randint(20, 200),
             delivery_time=fake.date_time_this_month(),
@@ -59,9 +58,10 @@ def create_fake_orders(num, user_ids, restaurant_ids):
             restaurant_id=random.choice(restaurant_ids)
         )
         db.session.add(order)
-        order_ids.append(order.id)
+        order_ids.append(order.id)  # This will be set automatically by the database
     db.session.commit()
     return order_ids
+
 
 # Function to create fake order items
 def create_fake_order_items(num, order_ids, menu_item_ids):

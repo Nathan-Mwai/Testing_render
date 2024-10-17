@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, session
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from server.models import db, Menu_item, Order_Item, Order, Restaurant, User
+from models import db, Menu_item, Order_Item, Order, Restaurant, User
 import os
 from sqlalchemy.exc import IntegrityError
 
