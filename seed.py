@@ -1,5 +1,5 @@
 from faker import Faker
-from models import db, User, Restaurant, Menu_item, Order, Order_Item
+from models import db, User, Restaurant, Menu_item, Order, Order_Item, bcrypt
 import random
 
 # Initialize Faker
@@ -8,13 +8,17 @@ fake = Faker()
 # Function to create fake users
 def create_fake_users(num):
     for _ in range(num):
+        # Generate a random password
+        password = fake.password()
+
         user = User(
             name=fake.name(),
             email=fake.unique.email(),
             address=fake.address(),
             phone_number=fake.phone_number(),
-            payment_information=fake.credit_card_number()
+            payment_information=fake.credit_card_number(),
         )
+        user.password = password  # Use the property setter to hash the password
         db.session.add(user)
     db.session.commit()
 

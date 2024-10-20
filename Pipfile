@@ -20,6 +20,7 @@ flask-marshmallow = "0.14.0"
 importlib-metadata = "6.0.0"
 pipenv = "*"
 shell = "*"
+flask-bcrypt = "1.0.1"
 
 [requires]
 python_version = "3.8"

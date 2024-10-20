@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, session
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from models import db, Menu_item, Order_Item, Order, Restaurant, User
+from models import db, Menu_item, Order_Item, Order, Restaurant, User, bcrypt
 import os
 from sqlalchemy.exc import IntegrityError
 
@@ -14,6 +14,7 @@ app.json.compact = False
 migrate = Migrate(app, db)
 api=Api(app)
 db.init_app(app)
+bcrypt.init_app(app)
 
 class Running_Test(Resource):
     def get(self):
