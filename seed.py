@@ -4,7 +4,6 @@ import random
 
 # Initialize Faker
 fake = Faker()
-
 # Function to create fake users
 def create_fake_users(num):
     for _ in range(num):
@@ -51,7 +50,7 @@ def create_fake_menu_items(num, restaurant_ids):
 
 # Function to create fake orders
 def create_fake_orders(num, user_ids, restaurant_ids):
-    order_ids = []
+    orders = []  # List to hold created order objects
     for _ in range(num):
         order = Order(
             status=random.choice(['Pending', 'Completed', 'Cancelled']),
@@ -62,9 +61,9 @@ def create_fake_orders(num, user_ids, restaurant_ids):
             restaurant_id=random.choice(restaurant_ids)
         )
         db.session.add(order)
-        order_ids.append(order.id)  # This will be set automatically by the database
-    db.session.commit()
-    return order_ids
+        orders.append(order)  # Keep track of the created order
+    db.session.commit()  # Commit here to ensure orders are saved and IDs are assigned
+    return [order.id for order in orders]  # Return IDs after commit
 
 
 # Function to create fake order items
@@ -83,13 +82,14 @@ if __name__ == '__main__':
     from app import app 
 
     with app.app_context():
+        db.drop_all()
         # Create the database and tables
         db.create_all()
 
         # Create fake data
-        num_users = 10
-        num_restaurants = 5
-        num_menu_items = 20
+        num_users = 20
+        num_restaurants = 15
+        num_menu_items = 60
         num_orders = 15
         num_order_items = 30  
 
@@ -103,9 +103,9 @@ if __name__ == '__main__':
 
         create_fake_menu_items(num_menu_items, restaurant_ids)
 
-        menu_item_ids = [menu_item.id for menu_item in Menu_item.query.all()]
-
         order_ids = create_fake_orders(num_orders, user_ids, restaurant_ids)
+
+        menu_item_ids = [menu_item.id for menu_item in Menu_item.query.all()]
 
         create_fake_order_items(num_order_items, order_ids, menu_item_ids)
 

@@ -13,13 +13,22 @@ class Menu_item(db.Model, SerializerMixin):
     serialize_rules = ('-restaurant.menu_items', '-order_items.menu_item',)
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    # Validation
+    name = db.Column(db.String, nullable=False)
     description = db.Column(db.String)
     price = db.Column(db.Integer)
-    # validation
     image = db.Column(db.String)
-    # validation
+    
+    @validates('price')
+    def positive_number(self, _, value):
+        if not 1 <= value:
+            raise ValueError("Prices must be positive")
+        return value
+    
+    @validates('image')
+    def image_availability(self, _, value):
+        if not value:
+            return ValueError("Meal image must be present for integrity")
+        return value
     
     restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'))
     
@@ -33,13 +42,18 @@ class Order_Item(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     quantity = db.Column(db.Integer)
     price = db.Column(db.Integer)
-    # validation
     
     menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_items.id'))
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     
     order = db.relationship("Order", back_populates="order_items")
     menu_item = db.relationship("Menu_item", back_populates="order_items")
+    
+    @validates('price')
+    def positive_number(self, _, value):
+        if not 1 <= value:
+            raise ValueError("Prices must be positive")
+        return value
 
 class Order(db.Model, SerializerMixin):
     __tablename__ = 'orders'
@@ -58,6 +72,12 @@ class Order(db.Model, SerializerMixin):
     user = db.relationship("User", back_populates="orders")
     restaurant = db.relationship("Restaurant", back_populates="orders")
     order_items = db.relationship('Order_Item', back_populates="order", cascade="all, delete-orphan")
+    
+    @validates('total_price')
+    def positive_number(self, _, value):
+        if not 1 <= value:
+            raise ValueError("Prices must be positive")
+        return value
 
 class Restaurant(db.Model, SerializerMixin):
     __tablename__ = 'restaurants'
@@ -65,27 +85,23 @@ class Restaurant(db.Model, SerializerMixin):
     serialize_rules = ('-orders.restaurant', '-menu_items.restaurant',)
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    # constraint
+    name = db.Column(db.String, nullable=False)
     address = db.Column(db.String)
-    cuisine = db.Column(db.String)
-    # validation
+    cuisine = db.Column(db.String, nullable=False)
     menu = db.Column(db.String)
     rating = db.Column(db.String)
     reviews = db.Column(db.String)
     
     orders = db.relationship("Order", back_populates="restaurant", cascade="all, delete-orphan")
     menu_items = db.relationship("Menu_item", back_populates="restaurant", cascade="all, delete-orphan")
-
+    
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     serialize_rules = ('-orders.user',)
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    # constraints
+    name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True)
-    # validation
     _password_hash = db.Column(db.String, nullable=False)
     address = db.Column(db.String)
     phone_number = db.Column(db.String)
@@ -116,3 +132,23 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(
             self._password_hash, password.encode('utf-8'))
+        
+    @validates('_password_hash')
+    def validate_password_hash(self, key, password_hash):
+        if not password_hash:
+            raise ValueError("Password hash is required.")
+        return password_hash
+    
+    @validates('email')
+    def validate_email(self, key, email):
+        if not email:
+            raise ValueError("Email is required.")
+        if not isinstance(email, str) or '@' not in email:
+            raise ValueError("Invalid email format.")
+        return email
+    
+    @validates('phone_number')
+    def validate_phone_number(self, key, phone_number):
+        if phone_number and (not isinstance(phone_number, str) or len(phone_number) < 10):
+            raise ValueError("Phone number must be at least 10 digits.")
+        return phone_number
