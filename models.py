@@ -105,9 +105,8 @@ class User(db.Model, SerializerMixin):
     _password_hash = db.Column(db.String, nullable=False)
     address = db.Column(db.String)
     phone_number = db.Column(db.String)
-    # validations
     payment_information = db.Column(db.String)
-    # validations
+    role = db.Column(db.String, nullable=False)
     
     orders = db.relationship("Order", back_populates="user", cascade="all, delete-orphan")
     

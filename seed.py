@@ -4,20 +4,24 @@ import random
 
 # Initialize Faker
 fake = Faker()
+
 # Function to create fake users
 def create_fake_users(num):
+    roles = ['client', 'restaurant_owner']
+    # I decided not to have admin part of the generation 
     for _ in range(num):
         # Generate a random password
         password = fake.password()
-
+        
         user = User(
             name=fake.name(),
             email=fake.unique.email(),
             address=fake.address(),
             phone_number=fake.phone_number(),
             payment_information=fake.credit_card_number(),
+            role=random.choice(roles)
         )
-        user.password = password 
+        user.password = password
         db.session.add(user)
     db.session.commit()
 
@@ -27,7 +31,7 @@ def create_fake_restaurants(num):
         restaurant = Restaurant(
             name=fake.company(),
             address=fake.address(),
-            cuisine=random.choice(['Italian', 'Chinese', 'Indian', 'Mexican', 'American']),
+            cuisine=random.choice(['African','Italian', 'Chinese', 'Indian', 'Mexican', 'American']),
             menu='Menu items will be defined separately',
             rating=str(random.randint(1, 5)),
             reviews=fake.text(max_nb_chars=200)
@@ -64,7 +68,6 @@ def create_fake_orders(num, user_ids, restaurant_ids):
         orders.append(order)  
     db.session.commit()  
     return [order.id for order in orders]  
-
 
 # Function to create fake order items
 def create_fake_order_items(num, order_ids, menu_item_ids):

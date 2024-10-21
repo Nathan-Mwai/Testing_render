@@ -4,9 +4,13 @@ from flask_restful import Api, Resource
 from models import db, Menu_item, Order_Item, Order, Restaurant, User, bcrypt
 import os
 from sqlalchemy.exc import IntegrityError
+# I'll be using this for authorization
+from functools import wraps
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SECRET_KEY'] = b"\x91\xf020H.\xef\x07\xe9\x17\xa8;+\xeb\xf8'".decode('latin-1')
+
 # Making it more accessible for presentation time
 # postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,10 +27,13 @@ class Running_Test(Resource):
 
 class Signup(Resource):
     def post(self):
-        # Corrects is request.is_json from request.is_json()
+        # Corrected is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
-        if "name" not in data or "password" not in data:
-            return {"error": "Missing inputs required"},422
+        if "name" not in data or "password" not in data or "role" not in data:
+            return {"error": "Missing inputs required"}, 422
+        if data['role'] not in ['admin', 'client', 'restaurant_owner']:
+            return {"error": "Invalid role"}, 422
+        
         try:
             user = User(
                 name=data['name'],
@@ -34,17 +41,19 @@ class Signup(Resource):
                 address=data['address'],
                 phone_number=data['phone_number'],
                 payment_information=data['payment_information'],
+                role=data['role'] 
             )
-            user.password_hash=data['password']
+            user.password_hash = data['password']
             db.session.add(user)
             db.session.commit()
-            session["user_id"]=user.id
+            session["user_id"] = user.id
             return make_response(user.to_dict(), 201)
         except IntegrityError:
             return {"error": "Username already exists"}, 422
         except Exception as e:
             print(e)
             return make_response({"error": str(e)}, 422)
+
         
 class CheckSession(Resource):
     def get(self):
@@ -56,25 +65,46 @@ class CheckSession(Resource):
         
 class Login(Resource):
     def post(self):
-        # Corrects is request.is_json from request.is_json()
+        # Corrected is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
         if "name" not in data or "password" not in data:
             return {"error": "Missing required fields"}, 422
+        
         user = User.query.filter_by(name=data["name"]).first()
         if user and user.authenticate(data["password"]):
             session["user_id"] = user.id
-            return make_response(user.to_dict(), 200)
+            return make_response({'user':f"{user.name} has logged in"}, 201)
         else:
             return make_response({"error": "Username or password incorrect"}, 401)
 
 class Logout(Resource):
     def delete(self):
-        if session["user_id"]:
-            session["user_id"]=None
-            return make_response({}, 204)
+        user_id = session.get("user_id")
+        if user_id:
+            user = User.query.get(user_id)
+            # Just like in the arrays and dictionaries this is used to remove an element from the session
+            session.pop("user_id", None) 
+            return make_response({"message": f"{user.name} has logged out"}, 204)
         else:
             return make_response({"error": "You are not logged in"}, 401)
-        
+
+
+
+def role_required(required_role):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if 'user_id' not in session:
+                return make_response({"error": "You are not logged in"}, 401)
+            
+            user = User.query.get(session['user_id'])
+            if user.role != required_role:
+                return make_response({"error": "Access forbidden: insufficient permissions"}, 403)
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+     
 class RestaurantResource(Resource):
     # This method is working well
     def get(self, id=None):
@@ -86,8 +116,9 @@ class RestaurantResource(Resource):
             return make_response({"message": "Restaurant not found"}, 404)
         return make_response(restaurant.to_dict(rules=('-menu_items',"-orders",)), 200)
     
+    @role_required('restaurant_owner')
     def post(self):
-        # Corrects is request.is_json from request.is_json()
+        # Corrected this is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
         new_restaurant = Restaurant(
             name=data['name'],
@@ -101,6 +132,30 @@ class RestaurantResource(Resource):
         db.session.commit()
         
         return make_response(new_restaurant.to_dict(), 201)
+    
+    @role_required('restaurant_owner')
+    def patch(self, id):
+        restaurant = Restaurant.query.get(id)
+        if not restaurant:
+            return make_response({"message": "Restaurant not found"}, 404)
+
+        data = request.get_json() if request.is_json else request.form
+        # Update only the fields provided in the request
+        if 'name' in data:
+            restaurant.name = data['name']
+        if 'address' in data:
+            restaurant.address = data['address']
+        if 'cuisine' in data:
+            restaurant.cuisine = data['cuisine']
+        if 'menu' in data:
+            restaurant.menu = data['menu']
+        if 'rating' in data:
+            restaurant.rating = data['rating']
+        if 'reviews' in data:
+            restaurant.reviews = data['reviews']
+
+        db.session.commit()
+        return make_response(restaurant.to_dict(), 200)
 
 class RestaurantMenu(Resource):
     def get(self, restaurant_id):
@@ -153,7 +208,41 @@ class ClearSession(Resource):
        session['user_id']=None
        
        return {},204 
+class AdminResource(Resource):
+    @role_required('admin')
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return make_response({"error": "User not found"}, 404)
 
+        db.session.delete(user)
+        db.session.commit()
+        return make_response({}, 204)
+
+class UserOrders(Resource):
+    def get(self):
+        if 'user_id' not in session:
+            return make_response({"error": "You are not logged in"}, 401)
+        
+        user_id = session['user_id']
+        orders = Order.query.filter_by(user_id=user_id).all()
+        
+        if not orders:
+            return make_response({"message": "No orders found for this user"}, 404)
+
+        orders_list = [
+            {
+                'id': order.id,
+                'status': order.status,
+                'total_price': order.total_price,
+                'delivery_time': order.delivery_time,
+                'delivery_address': order.delivery_address
+            } for order in orders
+        ]
+        return make_response({'user_id': user_id, 'orders': orders_list}, 200)
+    
+api.add_resource(UserOrders, '/user/orders')
+api.add_resource(AdminResource, '/admin/user/<int:user_id>')
 api.add_resource(RestaurantMenu, '/restaurant/<int:restaurant_id>/menu')    
 api.add_resource(RestaurantOrders, '/restaurant/<int:restaurant_id>/order')    
 api.add_resource(RestaurantResource, '/restaurants', '/restaurants/<int:id>')

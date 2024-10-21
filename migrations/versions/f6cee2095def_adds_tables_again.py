@@ -1,8 +1,8 @@
-"""Finalizing on tables
+"""Adds tables again
 
-Revision ID: ecb995ec826d
+Revision ID: f6cee2095def
 Revises: 
-Create Date: 2024-10-20 08:10:51.035464
+Create Date: 2024-10-21 09:28:11.673580
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ecb995ec826d'
+revision = 'f6cee2095def'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,7 @@ def upgrade():
     sa.Column('address', sa.String(), nullable=True),
     sa.Column('phone_number', sa.String(), nullable=True),
     sa.Column('payment_information', sa.String(), nullable=True),
+    sa.Column('role', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
