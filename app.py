@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+# Making it more accessible for presentation time
 # postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -124,6 +125,29 @@ class RestaurantMenu(Resource):
             'menu_items': menu_items
         })
 
+class RestaurantOrders(Resource):
+    def get(self, restaurant_id):
+        restaurant = Restaurant.query.get(restaurant_id)
+        if not restaurant:
+            return {"message": "There is no order in the restaurant yet"}, 404
+        
+        orders = [
+            {'id': order.id,
+            'status': order.status,
+            'delivery_time': order.delivery_time,
+            'deliver_address': order.delivery_address
+            }
+            for order in restaurant.orders 
+        ]
+        
+        return make_response(
+            {
+            'restaurant_id': restaurant.id,
+            'restaurant_name': restaurant.name,
+            'orders':orders
+            }
+        )
+
 class ClearSession(Resource):
    def delete(self):
        session['user_id']=None
@@ -131,6 +155,7 @@ class ClearSession(Resource):
        return {},204 
 
 api.add_resource(RestaurantMenu, '/restaurant/<int:restaurant_id>/menu')    
+api.add_resource(RestaurantOrders, '/restaurant/<int:restaurant_id>/order')    
 api.add_resource(RestaurantResource, '/restaurants', '/restaurants/<int:id>')
 api.add_resource(Logout, "/logout", endpoint="logout")   
 api.add_resource(Login, "/login", endpoint="login")
