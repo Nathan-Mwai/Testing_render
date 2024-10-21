@@ -17,7 +17,7 @@ def create_fake_users(num):
             phone_number=fake.phone_number(),
             payment_information=fake.credit_card_number(),
         )
-        user.password = password  # Use the property setter to hash the password
+        user.password = password 
         db.session.add(user)
     db.session.commit()
 
@@ -50,7 +50,7 @@ def create_fake_menu_items(num, restaurant_ids):
 
 # Function to create fake orders
 def create_fake_orders(num, user_ids, restaurant_ids):
-    orders = []  # List to hold created order objects
+    orders = []  
     for _ in range(num):
         order = Order(
             status=random.choice(['Pending', 'Completed', 'Cancelled']),
@@ -61,9 +61,9 @@ def create_fake_orders(num, user_ids, restaurant_ids):
             restaurant_id=random.choice(restaurant_ids)
         )
         db.session.add(order)
-        orders.append(order)  # Keep track of the created order
-    db.session.commit()  # Commit here to ensure orders are saved and IDs are assigned
-    return [order.id for order in orders]  # Return IDs after commit
+        orders.append(order)  
+    db.session.commit()  
+    return [order.id for order in orders]  
 
 
 # Function to create fake order items

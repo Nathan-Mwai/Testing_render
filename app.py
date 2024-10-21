@@ -120,6 +120,12 @@ class RestaurantMenu(Resource):
             'menu_items': menu_items
         })
 
+class ClearSession(Resource):
+   def delete(self):
+       session['user_id']=None
+       
+       return {},204 
+
 api.add_resource(RestaurantMenu, '/restaurant/<int:restaurant_id>/menu')    
 api.add_resource(RestaurantResource, '/restaurants', '/restaurants/<int:id>')
 api.add_resource(Logout, "/logout", endpoint="logout")   
