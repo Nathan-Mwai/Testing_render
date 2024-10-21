@@ -22,7 +22,8 @@ class Running_Test(Resource):
 
 class Signup(Resource):
     def post(self):
-        data = request.get_json() if request.is_json() else request.form
+        # Corrects is request.is_json from request.is_json()
+        data = request.get_json() if request.is_json else request.form
         if "name" not in data or "password" not in data:
             return {"error": "Missing inputs required"},422
         try:
@@ -54,6 +55,7 @@ class CheckSession(Resource):
         
 class Login(Resource):
     def post(self):
+        # Corrects is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
         if "name" not in data or "password" not in data:
             return {"error": "Missing required fields"}, 422
@@ -73,17 +75,19 @@ class Logout(Resource):
             return make_response({"error": "You are not logged in"}, 401)
         
 class RestaurantResource(Resource):
+    # This method is working well
     def get(self, id=None):
         if id is None:
-            restaurants = [restaurant.to_dict(only=('id',)) for restaurant in Restaurant.query.all()]
+            restaurants = [restaurant.to_dict(rules=('-menu_items',"-orders",)) for restaurant in Restaurant.query.all()]
             return make_response(restaurants, 200)
         restaurant = Restaurant.query.get(id)
         if not restaurant:
             return make_response({"message": "Restaurant not found"}, 404)
-        return make_response(restaurant.to_dict(), 200)
+        return make_response(restaurant.to_dict(rules=('-menu_items',"-orders",)), 200)
     
     def post(self):
-        data = request.get_json() if request.is_json() else request.form
+        # Corrects is request.is_json from request.is_json()
+        data = request.get_json() if request.is_json else request.form
         new_restaurant = Restaurant(
             name=data['name'],
             address=data['address'],
@@ -101,7 +105,7 @@ class RestaurantMenu(Resource):
     def get(self, restaurant_id):
         restaurant = Restaurant.query.get(restaurant_id)  
         if not restaurant:
-            return {'message': 'Restaurant not found'}, 404
+            return {'message': 'There is no menu for this restaurant yet'}, 404
         
         menu_items = [
             {
