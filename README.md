@@ -1,4 +1,4 @@
-Restaurant Order Management System
+## Restaurant Order Management System
 Overview
 This project models a restaurant order management system, capturing relationships between users, restaurants, orders, and menu items. It reflects a real-world scenario where customers can place orders at various restaurants, each with its own set of menu items.
 
