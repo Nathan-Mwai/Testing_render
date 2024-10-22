@@ -14,17 +14,17 @@ Many-to-Many Relationships:
 
 Order ↔ Menu Item (through Order Item): An order can contain multiple menu items, and a menu item can appear in multiple orders. The link between these two is the Order Item, which serves as an intermediary table that associates orders with menu items.
 Entities and Relationships
-1. User
+## User
 Represents a customer who places orders.
 Attributes: id, name, email
 Relationships: A user can have many orders (One-to-Many relationship with Order).
-2. Restaurant
+## Restaurant
 Represents a restaurant offering menu items for orders.
 Attributes: id, name, location
 Relationships:
 A restaurant can have many orders (One-to-Many relationship with Order).
 A restaurant can have many menu items (One-to-Many relationship with Menu Item).
-3. Order
+##  Order
 Represents an order placed by a user at a restaurant.
 Attributes: id, order_date, total_price, user_id, restaurant_id
 Relationships:
