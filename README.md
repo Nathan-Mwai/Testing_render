@@ -1,10 +1,10 @@
 ## Restaurant Order Management System
-Overview
+## Overview
 This project models a restaurant order management system, capturing relationships between users, restaurants, orders, and menu items. It reflects a real-world scenario where customers can place orders at various restaurants, each with its own set of menu items.
 
 The system includes the following key relationships:
 
-One-to-Many Relationships:
+## One-to-Many Relationships:
 
 User → Order: A user can place multiple orders, but each order belongs to one user.
 Restaurant → Order: A restaurant can have multiple orders, but each order belongs to one restaurant.
@@ -14,30 +14,30 @@ Many-to-Many Relationships:
 
 Order ↔ Menu Item (through Order Item): An order can contain multiple menu items, and a menu item can appear in multiple orders. The link between these two is the Order Item, which serves as an intermediary table that associates orders with menu items.
 Entities and Relationships
-1. User
+## User
 Represents a customer who places orders.
 Attributes: id, name, email
 Relationships: A user can have many orders (One-to-Many relationship with Order).
-2. Restaurant
+## Restaurant
 Represents a restaurant offering menu items for orders.
 Attributes: id, name, location
 Relationships:
 A restaurant can have many orders (One-to-Many relationship with Order).
 A restaurant can have many menu items (One-to-Many relationship with Menu Item).
-3. Order
+##  Order
 Represents an order placed by a user at a restaurant.
 Attributes: id, order_date, total_price, user_id, restaurant_id
 Relationships:
 Each order is linked to a single user (Many-to-One relationship with User).
 Each order is linked to a single restaurant (Many-to-One relationship with Restaurant).
 An order can have many order items (One-to-Many relationship with Order Item).
-4. Menu Item
+## Menu Item
 Represents a dish or item offered by a restaurant.
 Attributes: id, name, price, restaurant_id
 Relationships:
 Each menu item belongs to a single restaurant (Many-to-One relationship with Restaurant).
 A menu item can appear in multiple orders (Many-to-Many relationship with Order through Order Item).
-5. Order Item
+## Order Item
 Represents the specific items within an order, linking menu items to the order.
 Attributes: id, order_id, menu_item_id, quantity
 Relationships:
