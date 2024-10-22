@@ -1,10 +1,10 @@
 ## Restaurant Order Management System
-Overview
+## Overview
 This project models a restaurant order management system, capturing relationships between users, restaurants, orders, and menu items. It reflects a real-world scenario where customers can place orders at various restaurants, each with its own set of menu items.
 
 The system includes the following key relationships:
 
-One-to-Many Relationships:
+## One-to-Many Relationships:
 
 User → Order: A user can place multiple orders, but each order belongs to one user.
 Restaurant → Order: A restaurant can have multiple orders, but each order belongs to one restaurant.
