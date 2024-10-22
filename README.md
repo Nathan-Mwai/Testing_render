@@ -31,13 +31,13 @@ Relationships:
 Each order is linked to a single user (Many-to-One relationship with User).
 Each order is linked to a single restaurant (Many-to-One relationship with Restaurant).
 An order can have many order items (One-to-Many relationship with Order Item).
-4. Menu Item
+## Menu Item
 Represents a dish or item offered by a restaurant.
 Attributes: id, name, price, restaurant_id
 Relationships:
 Each menu item belongs to a single restaurant (Many-to-One relationship with Restaurant).
 A menu item can appear in multiple orders (Many-to-Many relationship with Order through Order Item).
-5. Order Item
+## Order Item
 Represents the specific items within an order, linking menu items to the order.
 Attributes: id, order_id, menu_item_id, quantity
 Relationships:
