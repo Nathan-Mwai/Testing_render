@@ -6,7 +6,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 # I'll be using this for authorization
 from functools import wraps
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 print(os.environ.get("DATABASE_URI"))
 

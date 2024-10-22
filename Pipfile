@@ -21,7 +21,6 @@ importlib-metadata = "6.0.0"
 pipenv = "*"
 shell = "*"
 flask-bcrypt = "1.0.1"
-python-dotenv = "*"
 
 [requires]
 python_version = "3.8"
