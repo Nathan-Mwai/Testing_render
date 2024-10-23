@@ -8,6 +8,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 # I'll be using this for authorization
 from functools import wraps
+# The method here allows the .env to be accessed by the required recipients
 from dotenv import load_dotenv
 
 load_dotenv()
