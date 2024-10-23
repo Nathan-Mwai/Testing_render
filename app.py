@@ -1,3 +1,5 @@
+# We are importing the required methods from here since we wanted to first understand how to import easily .
+# We did not use config.py for that matter
 from flask import Flask, request, make_response, session
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
@@ -6,6 +8,7 @@ import os
 from sqlalchemy.exc import IntegrityError
 # I'll be using this for authorization
 from functools import wraps
+# The method here allows the .env to be accessed by the required recipients
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,16 +18,13 @@ print(os.environ.get("DATABASE_URI"))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-# DATABASE_URI=postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
-# SECRET_KEY=cc3a622b48171c9b9c3e2fd32f52b8e4f975a55b31e49aa0
-# Making it more accessible for presentation time
-# postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
 migrate = Migrate(app, db)
 api=Api(app)
 db.init_app(app)
+# Using bycrpt to hide the data
 bcrypt.init_app(app)
 
 class Running_Test(Resource):
@@ -36,10 +36,11 @@ class Signup(Resource):
         # Corrected is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
         if "name" not in data or "password" not in data or "role" not in data:
+            # We are using the session method to verify the method of the user
             return {"error": "Missing inputs required"}, 422
         if data['role'] not in ['admin', 'client', 'restaurant_owner']:
             return {"error": "Invalid role"}, 422
-        
+        # Trying to apply make a signup
         try:
             user = User(
                 name=data['name'],
@@ -54,6 +55,7 @@ class Signup(Resource):
             db.session.commit()
             session["user_id"] = user.id
             return make_response(user.to_dict(), 201)
+            # If an error occurs then it will do as below
         except IntegrityError:
             return {"error": "Username already exists"}, 422
         except Exception as e:
