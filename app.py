@@ -24,6 +24,7 @@ app.json.compact = False
 migrate = Migrate(app, db)
 api=Api(app)
 db.init_app(app)
+# Using bycrpt to hide the data
 bcrypt.init_app(app)
 
 class Running_Test(Resource):
