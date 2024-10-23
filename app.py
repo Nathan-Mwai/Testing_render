@@ -1,3 +1,5 @@
+# We are importing the required methods from here since we wanted to first understand how to import easily .
+# We did not use config.py for that matter
 from flask import Flask, request, make_response, session
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
