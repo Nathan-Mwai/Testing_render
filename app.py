@@ -40,7 +40,7 @@ class Signup(Resource):
             return {"error": "Missing inputs required"}, 422
         if data['role'] not in ['admin', 'client', 'restaurant_owner']:
             return {"error": "Invalid role"}, 422
-        
+        # Trying to apply make a signup
         try:
             user = User(
                 name=data['name'],
@@ -55,6 +55,7 @@ class Signup(Resource):
             db.session.commit()
             session["user_id"] = user.id
             return make_response(user.to_dict(), 201)
+            # If an error occurs then it will do as below
         except IntegrityError:
             return {"error": "Username already exists"}, 422
         except Exception as e:
