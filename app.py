@@ -35,6 +35,7 @@ class Signup(Resource):
         # Corrected is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
         if "name" not in data or "password" not in data or "role" not in data:
+            # We are using the session method to verify the method of the user
             return {"error": "Missing inputs required"}, 422
         if data['role'] not in ['admin', 'client', 'restaurant_owner']:
             return {"error": "Invalid role"}, 422
