@@ -6,13 +6,15 @@ import os
 from sqlalchemy.exc import IntegrityError
 # I'll be using this for authorization
 from functools import wraps
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 print(os.environ.get("DATABASE_URI"))
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
-app.config['SECRET_KEY'] = os.environ.get("cc3a622b48171c9b9c3e2fd32f52b8e4f975a55b31e49aa0")
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 # DATABASE_URI=postgresql://testing_render_user:d5AgnAwbWNnqAVHbfYvKoIRgbhuquzHu@dpg-cs9p23rqf0us739k8cvg-a.oregon-postgres.render.com/testing_render
 # SECRET_KEY=cc3a622b48171c9b9c3e2fd32f52b8e4f975a55b31e49aa0
 # Making it more accessible for presentation time
