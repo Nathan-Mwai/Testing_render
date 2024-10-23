@@ -1,3 +1,5 @@
+# We are importing the required methods from here since we wanted to first understand how to import easily .
+# We did not use config.py for that matter
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData, func
