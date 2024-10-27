@@ -79,13 +79,13 @@ class Login(Resource):
     def post(self):
         # Corrected is request.is_json from request.is_json()
         data = request.get_json() if request.is_json else request.form
-        if "name" not in data or "password" not in data:
+        if "email" not in data or "password" not in data:
             return {"error": "Missing required fields"}, 422
         
-        user = User.query.filter_by(name=data["name"]).first()
+        user = User.query.filter_by(email=data["email"]).first()
         if user and user.authenticate(data["password"]):
             session["user_id"] = user.id
-            return make_response({'user':f"{user.name} has logged in"}, 201)
+            return make_response({'email':f"{user.email} has logged in"}, 201)
         else:
             return make_response({"error": "Username or password incorrect"}, 401)
     
