@@ -2,6 +2,7 @@
 # We did not use config.py for that matter
 from flask import Flask, request, make_response, session
 from flask_migrate import Migrate
+from flask_cors import CORS
 from flask_restful import Api, Resource
 from models import db, Menu_item, Order_Item, Order, Restaurant, User, bcrypt
 import os
@@ -20,6 +21,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
+
+CORS(app, resources={r"/restaurants": {"origins": "http://localhost:3000"}})
 
 migrate = Migrate(app, db)
 api=Api(app)
