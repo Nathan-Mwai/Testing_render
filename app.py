@@ -87,6 +87,15 @@ class Login(Resource):
             return make_response({'user':f"{user.name} has logged in"}, 201)
         else:
             return make_response({"error": "Username or password incorrect"}, 401)
+    
+    def get_user_options(self, role):
+        if role == 'admin':
+            return ['/admin/dashboard', '/user/orders']
+        elif role == 'client':
+            return ['/restaurants', '/user/orders']
+        elif role == 'restaurant_owner':
+            return ['/restaurant/manage', '/user/orders']
+        return []
 
 class Logout(Resource):
     def delete(self):
