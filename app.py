@@ -47,10 +47,10 @@ class Signup(Resource):
         try:
             user = User(
                 name=data['name'],
-                email=data['email'],
-                address=data['address'],
-                phone_number=data['phone_number'],
-                payment_information=data['payment_information'],
+                email=data.get['email'],
+                address=data.get['address'],
+                phone_number=data.get['phone_number'],
+                payment_information=data.get['payment_information'],
                 role=data['role'] 
             )
             user.password_hash = data['password']
