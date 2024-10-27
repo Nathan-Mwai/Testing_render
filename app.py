@@ -36,21 +36,23 @@ class Running_Test(Resource):
 
 class Signup(Resource):
     def post(self):
-        # Corrected is request.is_json from request.is_json()
-        data = request.get_json() if request.is_json else request.form
+        # Check if the request contains JSON
+        if not request.is_json:
+            return {"error": "Request must be JSON"}, 400
+        
+        data = request.get_json()
         if "name" not in data or "password" not in data or "role" not in data:
-            # We are using the session method to verify the method of the user
             return {"error": "Missing inputs required"}, 422
         if data['role'] not in ['admin', 'client', 'restaurant_owner']:
             return {"error": "Invalid role"}, 422
-        # Trying to apply make a signup
+        
         try:
             user = User(
-                name=data.get['name'],
-                email=data.get['email'],
-                address=data.get['address'],
-                phone_number=data.get['phone_number'],
-                payment_information=data.get['payment_information'],
+                name=data['name'],
+                email=data.get('email'),  # Use .get() for optional fields
+                address=data.get('address'),
+                phone_number=data.get('phone_number'),
+                payment_information=data.get('payment_information'),
                 role=data['role'] 
             )
             user.password_hash = data['password']
@@ -58,7 +60,6 @@ class Signup(Resource):
             db.session.commit()
             session["user_id"] = user.id
             return make_response(user.to_dict(), 201)
-            # If an error occurs then it will do as below
         except IntegrityError:
             return {"error": "Username already exists"}, 422
         except Exception as e:
