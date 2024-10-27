@@ -46,7 +46,7 @@ class Signup(Resource):
         # Trying to apply make a signup
         try:
             user = User(
-                name=data['name'],
+                name=data.get['name'],
                 email=data.get['email'],
                 address=data.get['address'],
                 phone_number=data.get['phone_number'],
