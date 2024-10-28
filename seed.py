@@ -2,7 +2,7 @@ from faker import Faker
 from models import db, User, Restaurant, Menu_item, Order, Order_Item, bcrypt
 import random
 
-# Initialize Faker
+# Initializes the Faker
 fake = Faker()
 
 # Function to create the fake users
