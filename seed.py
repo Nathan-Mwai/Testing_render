@@ -89,7 +89,7 @@ if __name__ == '__main__':
         # Create the database and tables
         db.create_all()
 
-        # Create fake data
+        # Creates the fake data
         num_users = 20
         num_restaurants = 15
         num_menu_items = 60
