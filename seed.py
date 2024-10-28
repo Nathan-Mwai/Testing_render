@@ -8,7 +8,7 @@ fake = Faker()
 # Function to create the fake users
 def create_fake_users(num):
     roles = ['client', 'restaurant_owner']
-    # I decided not to have admin part of the generation 
+    # I decided not to have an admin as  part of the generation 
     for _ in range(num):
         # Generate a random password
         password = fake.password()
