@@ -66,7 +66,8 @@ Python: Core programming language used for building the system.
 SQL (SQLite/PostgreSQL): Database management and query execution.
 Flask (Optional): Web framework for building the RESTful API.
 SQLAlchemy (Optional): ORM to manage database relationships, if needed.
-How to Run the Project
+
+## How to Run the Project
 Install Dependencies: Install the necessary Python packages by running:
 
 bash
