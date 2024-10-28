@@ -16,7 +16,7 @@ Order ↔ Menu Item (through Order Item): An order can contain multiple menu ite
 Entities and Relationships
 ## User
 Represents a customer who places orders.
-Attributes: id, name, email
+Attributes: id, name, email,etc
 Relationships: A user can have many orders (One-to-Many relationship with Order).
 ## Restaurant
 Represents a restaurant offering menu items for orders.
