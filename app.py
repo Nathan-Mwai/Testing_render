@@ -262,6 +262,68 @@ class UserOrders(Resource):
         ]
         return make_response({'user_id': user_id, 'orders': orders_list}, 200)
     
+    @role_required('client')  # Ensure that only clients can place orders
+    def post(self):
+        if 'user_id' not in session:
+            return make_response({"error": "You are not logged in"}, 401)
+
+        user_id = session['user_id']
+        data = request.get_json()
+
+        # Extract necessary fields from the request
+        total_price = data.get('total_price')
+        delivery_time = data.get('delivery_time')
+        delivery_address = data.get('delivery_address')
+        restaurant_id = data.get('restaurant_id')  # Ensure the restaurant ID is provided
+
+        # Create a new order
+        new_order = Order(
+            user_id=user_id,
+            restaurant_id=restaurant_id,
+            total_price=total_price,
+            delivery_time=delivery_time,
+            delivery_address=delivery_address,
+            status='Pending'  # Set the initial status
+        )
+        db.session.add(new_order)
+        db.session.commit()
+
+        return make_response(new_order.to_dict(), 201)
+
+
+class MenuItemResource(Resource):
+    @role_required('restaurant_owner')
+    def patch(self, menu_item_id):
+        menu_item = Menu_item.query.get(menu_item_id)
+        if not menu_item:
+            return make_response({"error": "Menu item not found"}, 404)
+
+        data = request.get_json()
+        if 'name' in data:
+            menu_item.name = data['name']
+        if 'price' in data:
+            menu_item.price = data['price']
+        if 'description' in data:
+            menu_item.description = data['description']
+        if 'image' in data:
+            menu_item.image = data['image']
+
+        db.session.commit()
+        return make_response(menu_item.to_dict(), 200)
+
+    @role_required('restaurant_owner')
+    def delete(self, menu_item_id):
+        menu_item = Menu_item.query.get(menu_item_id)
+        if not menu_item:
+            return make_response({"error": "Menu item not found"}, 404)
+
+        db.session.delete(menu_item)
+        db.session.commit()
+        return make_response({}, 204)
+
+api.add_resource(MenuItemResource, '/menu/item/<int:menu_item_id>')
+
+
 api.add_resource(UserOrders, '/user/orders')
 api.add_resource(AdminResource, '/admin/user/<int:user_id>')
 api.add_resource(RestaurantMenu, '/restaurant/<int:restaurant_id>/menu')    
