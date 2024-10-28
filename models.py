@@ -59,7 +59,7 @@ class Order_Item(db.Model, SerializerMixin):
 
 class Order(db.Model, SerializerMixin):
     __tablename__ = 'orders'
-    serialize_rules = ('-user.orders', '-restaurant.orders', '-order_items.order',)
+    serialize_rules = ('id', 'status', 'total_price', 'delivery_time', 'delivery_address')
     
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String)
