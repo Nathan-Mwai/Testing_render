@@ -5,7 +5,7 @@ import random
 # Initialize Faker
 fake = Faker()
 
-# Function to create fake users
+# Function to create the fake users
 def create_fake_users(num):
     roles = ['client', 'restaurant_owner']
     # I decided not to have admin part of the generation 
