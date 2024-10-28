@@ -61,7 +61,8 @@ Copy code
 ├── app.py             # Main application file with the CRUD logic
 ├── requirements.txt   # List of dependencies
 └── README.md          # Project documentation (this file)
-Technologies Used
+
+Technologies Used:
 Python: Core programming language used for building the system.
 SQL (SQLite/PostgreSQL): Database management and query execution.
 Flask (Optional): Web framework for building the RESTful API.
