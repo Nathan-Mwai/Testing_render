@@ -16,7 +16,7 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
 migrate = Migrate(app, db)
 api = Api(app)
@@ -165,19 +165,26 @@ class UserOrders(Resource):
         user_id = session['user_id']
         data = request.get_json()
 
-        total_price = data.get('total_price')
-        delivery_time = data.get('delivery_time')
-        delivery_address = data.get('delivery_address')
-        restaurant_id = data.get('restaurant_id')  # Ensure the restaurant ID is provided
+    # Validate required fields
+        required_fields = ['total_price', 'delivery_time', 'delivery_address', 'restaurant_id']
+        for field in required_fields:
+            if field not in data:
+                return make_response({"error": f"Missing required field: {field}"}, 422)
+
+        total_price = data['total_price']
+        delivery_time = data['delivery_time']
+        delivery_address = data['delivery_address']
+        restaurant_id = data['restaurant_id']
 
         new_order = Order(
-            user_id=user_id,
-            restaurant_id=restaurant_id,
-            total_price=total_price,
-            delivery_time=delivery_time,
-            delivery_address=delivery_address,
-            status='Pending'  # Set the initial status
+        user_id=user_id,
+        restaurant_id=restaurant_id,
+        total_price=total_price,
+        delivery_time=delivery_time,
+        delivery_address=delivery_address,
+        status='Pending'  # Set the initial status
         )
+
         db.session.add(new_order)
         db.session.commit()
 
